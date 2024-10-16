@@ -1,1 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Throwable Ball (Stress Relief)</title>
+    <style>
+        /* Basic resets */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            background-color: #1c1c1c; /* Dark theme background */
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            cursor: crosshair; /* Change cursor to crosshair for easier selection */
+        }
+
+        /* Canvas Styling */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canv"></canvas>
+
+<script>
+    // Point class for position and mouse position
+    function Pt(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    // Ball class
+    function Ball() {
+        this.pos = new Pt(c.width / 2, c.height / 2);  // Ball position
+        this.mPos = new Pt(0, 0);  // Mouse position
+        this.Xvel = 0;  // X velocity
+        this.Yvel = 0;  // Y velocity
+        this.accel = new Pt(0, 0);  // Acceleration
+
+        // Event listener for mouse movement
+        var ballObj = this;
+        window.addEventListener('mousemove', function (e) {
+            ballObj.mouseMove(e);
+        }, false);
+    }
+
+    // Drawing the ball
+    Ball.prototype.draw = function () {
+        $.fillStyle = "hsla(180, 100%, 50%, 1)";  // Neon cyan color
+        $.shadowColor = 'hsla(180, 100%, 50%, 0.8)';  // Neon glow effect
+        $.shadowBlur = 20;
+        $.shadowOffsetX = 5;
+        $.shadowOffsetY = 5;
+        $.beginPath();
+        $.arc(this.pos.x, this.pos.y, 60, 0, 2 * Math.PI); // Draw the circle (ball)
+        $.fill();
+    };
+
+    // Updating the ball's position
+    Ball.prototype.update = function () {
+        this.accel.x = (this.mPos.x - this.pos.x) * 0.01; // Spring-like effect
+        this.accel.y = (this.mPos.y - this.pos.y) * 0.01;
+
+        this.Xvel += this.accel.x;
+        this.Yvel += this.accel.y;
+
+        // Update the ball's position
+        this.pos.x += this.Xvel;
+        this.pos.y += this.Yvel;
+
+        // Apply damping
+        this.Xvel *= 0.97;
+        this.Yvel *= 0.97;
+
+        // Constrain ball within the window boundaries
+        const ballRadius = 60;  // Radius of the ball
+        if (this.pos.x < ballRadius) {
+            this.pos.x = ballRadius;
+            this.Xvel *= -0.5; // Reflect the velocity
+        } else if (this.pos.x > c.width - ballRadius) {
+            this.pos.x = c.width - ballRadius;
+            this.Xvel *= -0.5; // Reflect the velocity
+        }
+
+        if (this.pos.y < ballRadius) {
+            this.pos.y = ballRadius;
+            this.Yvel *= -0.5; // Reflect the velocity
+        } else if (this.pos.y > c.height - ballRadius) {
+            this.pos.y = c.height - ballRadius;
+            this.Yvel *= -0.5; // Reflect the velocity
+        }
+    };
+
+    // Update mouse position
+    Ball.prototype.mouseMove = function (e) {
+        this.mPos.x = e.clientX;
+        this.mPos.y = e.clientY;
+    };
+
+    // Resize canvas on window resize
+    function resizeCanv() {
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+        if (ball) ball.pos = new Pt(c.width / 2, c.height / 2);  // Reposition the ball
+    }
+
+    // Set up the canvas
+    var c = document.getElementById('canv');
+    var $ = c.getContext('2d');
+
+    window.addEventListener('resize', resizeCanv, false);
+    resizeCanv();  // Initial canvas size adjustment
+
+    // Singleton Ball instance
+    var ball = new Ball();
+
+    // Handle mouse events to move or spawn the ball
+    window.addEventListener('mousedown', function (e) {
+        if (e.button === 0) {  // Left click to move the ball
+            ball.mPos.x = e.clientX;
+            ball.mPos.y = e.clientY;
+        } else if (e.button === 2) {  // Right click to spawn a new ball
+            ball = new Ball();
+        }
+    });
+
+    // Prevent the context menu from appearing on right-click
+    window.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+    });
+
+    // Request Animation Frame for smooth animation
+    window.requestAnimFrame = (function (callback) {
+        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+            function (callback) {
+                window.setTimeout(callback, 1000 / 60);
+            };
+    })();
+
+    // Animation loop
+    function animate() {
+        // Update ball position
+        ball.update();
+
+        // Clear the canvas
+        $.clearRect(0, 0, c.width, c.height);
+
+        // Draw the ball
+        ball.draw();
+
+        // Request new animation frame
+        window.requestAnimFrame(animate);
+    }
+
+    animate();
+
+</script>
+
+</body>
+</html>
