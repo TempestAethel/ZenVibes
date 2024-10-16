@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -20,7 +21,6 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
-            cursor: crosshair; /* Change cursor to crosshair for easier selection */
             position: relative;
         }
 
@@ -67,6 +67,12 @@
         this.y = y;
     }
 
+    // Dot class for random dots
+    function Dot() {
+        this.pos = new Pt(Math.random() * c.width, Math.random() * c.height);  // Random position
+        this.radius = Math.random() * 10 + 5;  // Random radius between 5 and 15
+    }
+
     // Ball class
     function Ball() {
         this.pos = new Pt(c.width / 2, c.height / 2);  // Ball position
@@ -75,12 +81,6 @@
         this.Yvel = 0;  // Y velocity
         this.accel = new Pt(0, 0);  // Acceleration
         this.boundaryEnabled = true;  // Boundary flag
-
-        // Event listener for mouse movement
-        var ballObj = this;
-        window.addEventListener('mousemove', function (e) {
-            ballObj.mouseMove(e);
-        }, false);
     }
 
     // Drawing the ball
@@ -155,6 +155,48 @@
     // Singleton Ball instance
     var ball = new Ball();
 
+    // Array of random dots
+    var dots = [];
+    var numDots = 20; // Number of random dots to spawn
+
+    // Function to spawn random dots
+    function spawnDots() {
+        for (var i = 0; i < numDots; i++) {
+            dots.push(new Dot());
+        }
+    }
+
+    // Call function to spawn initial dots
+    spawnDots();
+
+    // Function to check collision between ball and a dot
+    function checkCollision(dot) {
+        const dx = dot.pos.x - ball.pos.x;
+        const dy = dot.pos.y - ball.pos.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        return distance < 60 + dot.radius; // Ball's radius + dot's radius
+    }
+
+    // Remove dots that are hit by the ball
+    function removeHitDots() {
+        for (var i = 0; i < dots.length; i++) {
+            if (checkCollision(dots[i])) {
+                dots.splice(i, 1);  // Remove the dot from the array
+                i--;  // Adjust index after removal
+            }
+        }
+    }
+
+    // Drawing the dots
+    function drawDots() {
+        $.fillStyle = "hsla(100, 100%, 50%, 1)";  // Green color for dots
+        for (var i = 0; i < dots.length; i++) {
+            $.beginPath();
+            $.arc(dots[i].pos.x, dots[i].pos.y, dots[i].radius, 0, 2 * Math.PI);
+            $.fill();
+        }
+    }
+
     // Handle mouse events to move the ball
     window.addEventListener('mousemove', function (e) {
         ball.mPos.x = e.clientX;
@@ -185,6 +227,10 @@
 
         // Draw the ball
         ball.draw();
+
+        // Draw and check for collisions with dots
+        drawDots();
+        removeHitDots();
 
         // Request new animation frame
         window.requestAnimFrame(animate);
