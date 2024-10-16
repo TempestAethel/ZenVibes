@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Black Hole Liquid Effect</title>
+    <title>Small Black Hole Liquid Effect</title>
     <style>
         * {
             margin: 0;
@@ -95,7 +96,7 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Draw black holes and make the liquid effect move towards them
+    // Draw small black holes and make the liquid effect move towards them
     function drawBlackHoles() {
         for (let i = 0; i < blackHoles.length; i++) {
             const bh = blackHoles[i];
@@ -103,25 +104,26 @@
             // Draw the black hole center
             ctx.beginPath();
             ctx.arc(bh.x, bh.y, bh.size, 0, Math.PI * 2);
-            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
             ctx.fill();
 
-            // Draw the color swirl around it
-            const gradient = ctx.createRadialGradient(bh.x, bh.y, 0, bh.x, bh.y, bh.size * 3);
-            gradient.addColorStop(0, "rgba(255, 255, 255, 0.2)");
+            // Draw the liquid swirl effect around the black hole
+            const gradient = ctx.createRadialGradient(bh.x, bh.y, 0, bh.x, bh.y, bh.size * 2);
+            gradient.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+            gradient.addColorStop(0.8, "rgba(0, 0, 0, 0.4)");
             gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
 
             ctx.fillStyle = gradient;
-            ctx.globalCompositeOperation = "multiply";
+            ctx.globalCompositeOperation = "multiply"; // Blend the colors into the black hole
             ctx.beginPath();
-            ctx.arc(bh.x, bh.y, bh.size * 3, 0, Math.PI * 2);
+            ctx.arc(bh.x, bh.y, bh.size * 2, 0, Math.PI * 2);
             ctx.fill();
 
             // Update the black hole size and remove if too large
-            bh.size += 1;
-            if (bh.size > 200) {
+            bh.size += 0.5;  // Slower growth
+            if (bh.size > 50) { // Black hole disappears when too large
                 blackHoles.splice(i, 1);
-                i--; // Adjust the index after removal
+                i--; // Adjust index after removal
             }
         }
     }
@@ -143,7 +145,7 @@
         blackHoles.push({
             x: mouseX,
             y: mouseY,
-            size: 10 // Initial size
+            size: 5 // Smaller initial size for black holes
         });
     });
 
