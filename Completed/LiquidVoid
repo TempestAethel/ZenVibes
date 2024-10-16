@@ -1,0 +1,145 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Gradient Background</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        #app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        .settings {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="settings">
+        <label for="backgroundSelector">Choose Background:</label>
+        <select id="backgroundSelector">
+            <option value="gray">Gray Gradient</option>
+            <option value="color">Color Gradient</option>
+        </select>
+    </div>
+    <canvas id="liquidCanvas"></canvas>
+</div>
+
+<script>
+    const canvas = document.getElementById("liquidCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let colors = ["#6a11cb", "#2575fc"]; // Default gradient colors
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let time = 0;
+
+    // Resize the canvas to fit the screen
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    // Generate a gradient fill based on the selected colors
+    function generateGradient() {
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, colors[0]);
+        gradient.addColorStop(1, colors[1]);
+        return gradient;
+    }
+
+    // Draw the liquid-like effect near the cursor
+    function drawLiquid() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Gradient background
+        const bgGradient = generateGradient();
+        ctx.fillStyle = bgGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Liquid-like movement near the cursor
+        const x = mouseX;
+        const y = mouseY;
+
+        // Dynamic gradient for liquid-like shapes
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 100);
+        gradient.addColorStop(0, "rgba(255, 255, 255, 0.2)");
+        gradient.addColorStop(0.5, "rgba(0, 0, 0, 0.4)");
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+        ctx.fillStyle = gradient;
+        ctx.globalCompositeOperation = "screen"; // Blend mode to create soft liquid effect
+
+        // Draw moving liquid circles
+        for (let i = 0; i < 5; i++) {
+            const offsetX = Math.sin(time + i) * 50;
+            const offsetY = Math.cos(time + i) * 50;
+            ctx.beginPath();
+            ctx.arc(x + offsetX, y + offsetY, 100 + Math.sin(time + i) * 30, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        time += 0.05;
+        requestAnimationFrame(drawLiquid);
+    }
+
+    // Event listener to track mouse movement
+    canvas.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    // Change gradient background based on user selection
+    function changeBackground() {
+        const selectedValue = document.getElementById("backgroundSelector").value;
+        if (selectedValue === "gray") {
+            colors = ["#606060", "#c0c0c0"]; // Gray gradient
+        } else {
+            colors = ["#6a11cb", "#2575fc"]; // Color gradient
+        }
+    }
+
+    // Initialize canvas and start drawing liquid effect
+    window.addEventListener("resize", resizeCanvas);
+    document.getElementById("backgroundSelector").addEventListener("change", changeBackground);
+
+    resizeCanvas();  // Initial canvas size adjustment
+    changeBackground();  // Set initial gradient background
+    drawLiquid();  // Start drawing the liquid effect
+
+</script>
+
+</body>
+</html>
