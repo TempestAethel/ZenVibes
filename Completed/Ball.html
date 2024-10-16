@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -196,6 +195,20 @@
             $.fill();
         }
     }
+
+    // Function to periodically spawn new dots
+    function periodicDotRespawn() {
+        // After 2 seconds, spawn new dots
+        setInterval(function () {
+            // Spawn new dots only if the number of dots is below the limit
+            if (dots.length < numDots) {
+                dots.push(new Dot());
+            }
+        }, 2000); // Every 2 seconds
+    }
+
+    // Call function to periodically spawn dots
+    periodicDotRespawn();
 
     // Handle mouse events to move the ball
     window.addEventListener('mousemove', function (e) {
