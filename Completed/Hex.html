@@ -1,0 +1,144 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hex Color Palette</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fff;
+      transition: background 0.5s ease;
+    }
+
+    .color-palette {
+      display: grid;
+      grid-template-columns: repeat(20, 30px); /* Grid with 20 colors per row */
+      gap: 5px;
+      padding: 10px;
+      border: 2px solid #000;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .color-palette div {
+      width: 30px;
+      height: 30px;
+      border-radius: 5px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .color-palette div:hover {
+      transform: scale(1.2);
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .color-input {
+      display: none;
+    }
+
+    /* Button styling */
+    .copy-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    .copy-button:hover {
+      background-color: #0056b3;
+    }
+
+    .copy-button:active {
+      background-color: #00408d;
+    }
+  </style>
+</head>
+<body>
+  <!-- Color Picker Grid -->
+  <div class="color-palette">
+    <!-- Colors will be dynamically added with JavaScript -->
+  </div>
+
+  <!-- Hidden color input to simulate color picker -->
+  <input type="color" id="symbolColor" class="color-input">
+
+  <!-- Copy button -->
+  <button class="copy-button" id="copyButton">Copy Gradient CSS</button>
+
+  <script>
+    // Array of hex color codes to use in the palette
+    const colors = [
+      '#FF5733', '#33FF57', '#3357FF', '#57FF33', '#5733FF', '#FF33A1',
+      '#33FFF5', '#F5FF33', '#A1FF33', '#5733FF', '#F533FF', '#33D1FF',
+      '#D1FF33', '#33FFB1', '#FF3380', '#80FF33', '#33FF99', '#9933FF',
+      '#FF6F61', '#6A1B9A', '#1E88E5', '#43A047', '#FBC02D', '#8E24AA',
+      '#00BCD4', '#FF9800', '#9C27B0', '#4CAF50', '#3F51B5', '#FFEB3B',
+      '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
+      '#800000', '#808000', '#008000', '#000080', '#800080', '#008080',
+      '#C0C0C0', '#A52A2A', '#DEB887', '#5F9EA0', '#7FFF00', '#D2691E'
+      // Add more colors as needed
+    ];
+
+    const paletteContainer = document.querySelector('.color-palette');
+    const colorInput = document.querySelector('#symbolColor'); // Hidden color input
+    const copyButton = document.querySelector('#copyButton'); // Copy button
+    let selectedColors = []; // Array to store selected colors
+
+    // Inject color swatches into the color palette
+    colors.forEach(color => {
+      const colorDiv = document.createElement('div');
+      colorDiv.style.backgroundColor = color;
+      paletteContainer.appendChild(colorDiv);
+
+      // Add or remove color from the gradient on click
+      colorDiv.addEventListener('click', () => {
+        // Check if the color is already selected
+        const colorIndex = selectedColors.indexOf(color);
+
+        if (colorIndex > -1) {
+          // If color is already in the gradient, remove it
+          selectedColors.splice(colorIndex, 1);
+          colorDiv.style.border = 'none'; // Remove border on deselection
+        } else {
+          // If color is not in the gradient, add it
+          selectedColors.push(color);
+          colorDiv.style.border = '2px solid #000'; // Add border on selection
+        }
+
+        // Update the background gradient
+        updateGradient();
+      });
+    });
+
+    // Update background gradient
+    function updateGradient() {
+      if (selectedColors.length === 0) {
+        document.body.style.background = '#fff'; // If no colors selected, set to white
+      } else {
+        const gradient = `linear-gradient(to right, ${selectedColors.join(', ')})`;
+        document.body.style.background = gradient;
+      }
+    }
+
+    // Copy the current gradient CSS to clipboard
+    copyButton.addEventListener('click', () => {
+      const gradientCSS = `background: linear-gradient(to right, ${selectedColors.join(', ')});`;
+      navigator.clipboard.writeText(gradientCSS).then(() => {
+        alert('Gradient CSS copied to clipboard!');
+      });
+    });
+
+  </script>
+</body>
+</html>
