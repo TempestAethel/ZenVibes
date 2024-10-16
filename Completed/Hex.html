@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -78,6 +77,10 @@
       transition: background-color 0.3s ease;
     }
 
+    .reset-button {
+      bottom: 70px; /* Adjust position */
+    }
+
     .reset-button:hover {
       background-color: #0056b3;
     }
@@ -98,8 +101,25 @@
       margin-right: 10px;
     }
 
-    .input-wrapper label {
+    .input-wrapper label, .input-wrapper input[type="checkbox"] {
       margin-left: 5px;
+    }
+
+    /* Gradient animation */
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .animated-gradient {
+      animation: gradient 15s ease infinite;
     }
   </style>
 </head>
@@ -117,37 +137,41 @@
     <label for="gradientAngle">Gradient Angle:</label>
     <input type="range" id="gradientAngle" min="0" max="360" value="90" step="1">
     <span id="angleValue">90°</span>
+
+    <label for="animationToggle">Enable Animation:</label>
+    <input type="checkbox" id="animationToggle">
   </div>
 
   <!-- Reset button -->
   <button class="reset-button" id="resetButton">Reset</button>
 
   <script>
-    const colors = [
-      '#FF0000', '#FF3300', '#FF5733', '#FF6F33', '#FF8C00', '#FF9800', '#FFB347', '#FFCC33', '#FFD700', '#FFFF00',
-      '#F5FF33', '#A1FF33', '#80FF33', '#66FF33', '#33FF57', '#32CD32', '#4CAF50', '#2E8B57', '#20B2AA', '#00FF00',
-      '#33FFF5', '#00FFFF', '#00BFFF', '#1E88E5', '#3399FF', '#3366FF', '#3357FF', '#0000FF', '#00008B', '#000080',
-      '#8A2BE2', '#6A5ACD', '#4B0082', '#9C27B0', '#8B008B', '#7FFF00', '#9933FF', '#8B00FF', '#8A2BE2', '#D2691E',
-      '#B22222', '#B0B0B0', '#C0C0C0', '#A52A2A', '#D2691E', '#5F9EA0', '#808000', '#008080', '#A52A2A', '#4B0082',
-      '#FF3380', '#FF1493', '#FF6347', '#FF4500', '#FF8C00', '#2E8B57', '#6A5ACD', '#FFD700', '#B0E0E6', '#B0C4DE',
-      '#C0C0C0', '#6A5ACD', '#32CD32', '#FF4500', '#DAA520', '#FF6347', '#FFD700', '#FF1493', '#FF4500', '#00BFFF',
-      '#8A2BE2', '#98FB98', '#FFD700', '#ADFF2F', '#8A2BE2', '#4B0082', '#4CAF50', '#FF6347', '#00FFFF', '#6B8E23',
-      '#B22222', '#4B0082', '#D2691E', '#8B0000', '#808000', '#7FFF00', '#FF00FF', '#FF8C00', '#2E8B57', '#4CAF50',
-      '#D2691E', '#5F9EA0', '#F5FF33', '#FF3380', '#B0E0E6', '#5F9EA0', '#B0C4DE', '#B0B0B0', '#FF0000', '#FF8C00',
-      '#FF6F61', '#E64A19', '#D32F2F', '#FF5722', '#FF7043', '#FF8A65', '#FF9E80', '#FFAB91', '#FFB74D', '#FFEB3B',
-      '#FBC02D', '#FDD835', '#FBC02D', '#FFEB3B', '#FFEA00', '#FFB300', '#F57C00', '#FF6F00', '#FF8F00', '#FF9E00',
-      '#FF5722', '#FF7043', '#FF8A65', '#FF9E80', '#FFAB91', '#FF6F61', '#E64A19', '#D32F2F', '#FF5722', '#FF7043',
-      '#3F51B5', '#5C6BC0', '#8E24AA', '#9C27B0', '#AB47BC', '#6A1B9A', '#9C27B0', '#4A148C', '#8E24AA', '#7B1FA2',
-      '#7FFF00', '#32CD32', '#4CAF50', '#43A047', '#2E7D32', '#1B5E20', '#0D5302', '#1B5E20', '#8BC34A', '#66BB6A',
-      '#4CAF50', '#388E3C', '#00796B', '#004D40', '#00796B', '#0288D1', '#0288D1', '#004D40', '#002984', '#1976D2',
-      '#1A237E', '#3F51B5', '#5C6BC0', '#7986CB', '#9FA8DA', '#B0BEC5', '#90A4AE', '#607D8B', '#546E7A', '#455A64',
-      '#37474F', '#263238', '#212121', '#616161', '#757575', '#9E9E9E', '#BDBDBD', '#E0E0E0', '#F5F5F5', '#FFFFFF'
-    ];
+const colors = [
+  '#FF0000', '#FF3300', '#FF6600', '#FF9900', '#FFCC00', '#FFFF00', '#CCFF00', '#99FF00', '#66FF00', '#33FF00', '#00FF00', '#00FF33', '#00FF66', '#00FF99', '#00FFCC',
+  '#FF3300', '#FF4D00', '#FF6600', '#FF7F00', '#FF9900', '#FFB300', '#FFCC00', '#FFE600', '#FFFF00', '#F9FF00', '#E6FF00', '#CCFF00', '#A3FF00', '#7AFF00', '#52FF00',
+  '#FF6600', '#FF7F00', '#FF9900', '#FFB300', '#FFCC00', '#FFE600', '#FFFF00', '#F9FF00', '#E6FF00', '#D4FF00', '#B8FF00', '#99FF00', '#80FF00', '#66FF00', '#4DFF00',
+  '#FF9900', '#FFB300', '#FFCC00', '#FFE600', '#FFFF00', '#FFFF33', '#F9FF33', '#E6FF33', '#D4FF33', '#B3FF33', '#99FF33', '#80FF33', '#66FF33', '#4DFF33', '#33FF33',
+  '#FFCC00', '#FFB300', '#FFCC00', '#FFE600', '#FFFF00', '#FFFF33', '#F9FF33', '#E6FF33', '#D4FF33', '#B3FF33', '#99FF33', '#80FF33', '#66FF33', '#4DFF33', '#33FF33',
+  '#FFFF00', '#FFFF33', '#F9FF33', '#E6FF33', '#D4FF33', '#B3FF33', '#99FF33', '#80FF33', '#66FF33', '#4DFF33', '#33FF33', '#2AFF33', '#20FF33', '#19FF33', '#13FF33',
+  '#CCFF00', '#A3FF00', '#7AFF00', '#52FF00', '#2AFF00', '#1AFF00', '#14FF00', '#11FF00', '#0DFF00', '#0AFF00', '#08FF00', '#06FF00', '#04FF00', '#03FF00', '#02FF00',
+  '#99FF00', '#7AFF00', '#52FF00', '#2AFF00', '#1AFF00', '#14FF00', '#11FF00', '#0DFF00', '#0AFF00', '#08FF00', '#06FF00', '#04FF00', '#03FF00', '#02FF00', '#01FF00',
+  '#66FF00', '#58FF00', '#4DFF00', '#33FF00', '#20FF00', '#19FF00', '#13FF00', '#0DFF00', '#0AFF00', '#08FF00', '#06FF00', '#04FF00', '#03FF00', '#02FF00', '#01FF00',
+  '#33FF00', '#2AFF00', '#20FF00', '#13FF00', '#11FF00', '#0DFF00', '#0AFF00', '#08FF00', '#06FF00', '#04FF00', '#03FF00', '#02FF00', '#01FF00', '#01FF33', '#01FF66',
+  '#00FF00', '#00FF33', '#00FF66', '#00FF99', '#00FFCC', '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF',
+  '#00FF33', '#00FF66', '#00FF99', '#00FFCC', '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF', '#0022FF',
+  '#00FF66', '#00FF99', '#00FFCC', '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF', '#0022FF', '#0011FF',
+  '#00FF99', '#00FFCC', '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF', '#0022FF', '#0011FF', '#0000FF',
+  '#00FFCC', '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF', '#0022FF', '#0011FF', '#0000FF', '#0000CC',
+  '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF', '#0022FF', '#0011FF', '#0000FF', '#0000CC', '#0000B3'
+];
+
 
     let selectedColors = [];
     const colorPalette = document.querySelector('.color-palette');
     const angleSlider = document.querySelector('#gradientAngle');
     const angleValue = document.querySelector('#angleValue');
+    const animationToggle = document.querySelector('#animationToggle');
+    const resetButton = document.querySelector('#resetButton');
 
     // Generate the color palette dynamically
     colors.forEach(color => {
@@ -175,22 +199,33 @@
       const angle = angleSlider.value;
       const gradient = `linear-gradient(${angle}deg, ${selectedColors.join(', ')})`;
       document.body.style.background = gradient;
+
+      if (animationToggle.checked) {
+        document.body.classList.add('animated-gradient');
+      } else {
+        document.body.classList.remove('animated-gradient');
+      }
     }
 
-    // Event listeners for updating gradient angle
+    // Event listeners for updating gradient angle and animation
     angleSlider.addEventListener('input', () => {
       angleValue.textContent = `${angleSlider.value}°`;
       updateGradient();
     });
 
+    animationToggle.addEventListener('change', () => {
+      updateGradient();
+    });
+
     // Reset button functionality
-    document.querySelector('#resetButton').addEventListener('click', () => {
+    resetButton.addEventListener('click', () => {
       selectedColors = [];
       document.querySelectorAll('.color-palette div').forEach(div => {
         div.style.border = 'none';
       });
       angleSlider.value = 90;
       angleValue.textContent = '90°';
+      animationToggle.checked = false;
       updateGradient();
     });
 
