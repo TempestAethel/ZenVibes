@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,6 +21,30 @@
             height: 100vh;
             overflow: hidden;
             cursor: crosshair; /* Change cursor to crosshair for easier selection */
+            position: relative;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #008080;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .toggle-btn:hover {
+            background-color: #00b3b3;
+        }
+
+        .toggle-btn:focus {
+            outline: none;
         }
 
         /* Canvas Styling */
@@ -35,6 +58,7 @@
 <body>
 
 <canvas id="canv"></canvas>
+<button class="toggle-btn" id="toggleBoundaries">Disable Boundaries</button>
 
 <script>
     // Point class for position and mouse position
@@ -50,6 +74,7 @@
         this.Xvel = 0;  // X velocity
         this.Yvel = 0;  // Y velocity
         this.accel = new Pt(0, 0);  // Acceleration
+        this.boundaryEnabled = true;  // Boundary flag
 
         // Event listener for mouse movement
         var ballObj = this;
@@ -86,22 +111,24 @@
         this.Xvel *= 0.97;
         this.Yvel *= 0.97;
 
-        // Constrain ball within the window boundaries
-        const ballRadius = 60;  // Radius of the ball
-        if (this.pos.x < ballRadius) {
-            this.pos.x = ballRadius;
-            this.Xvel *= -0.5; // Reflect the velocity
-        } else if (this.pos.x > c.width - ballRadius) {
-            this.pos.x = c.width - ballRadius;
-            this.Xvel *= -0.5; // Reflect the velocity
-        }
+        // Constrain ball within the window boundaries (if enabled)
+        if (this.boundaryEnabled) {
+            const ballRadius = 60;  // Radius of the ball
+            if (this.pos.x < ballRadius) {
+                this.pos.x = ballRadius;
+                this.Xvel *= -0.5; // Reflect the velocity
+            } else if (this.pos.x > c.width - ballRadius) {
+                this.pos.x = c.width - ballRadius;
+                this.Xvel *= -0.5; // Reflect the velocity
+            }
 
-        if (this.pos.y < ballRadius) {
-            this.pos.y = ballRadius;
-            this.Yvel *= -0.5; // Reflect the velocity
-        } else if (this.pos.y > c.height - ballRadius) {
-            this.pos.y = c.height - ballRadius;
-            this.Yvel *= -0.5; // Reflect the velocity
+            if (this.pos.y < ballRadius) {
+                this.pos.y = ballRadius;
+                this.Yvel *= -0.5; // Reflect the velocity
+            } else if (this.pos.y > c.height - ballRadius) {
+                this.pos.y = c.height - ballRadius;
+                this.Yvel *= -0.5; // Reflect the velocity
+            }
         }
     };
 
@@ -128,19 +155,16 @@
     // Singleton Ball instance
     var ball = new Ball();
 
-    // Handle mouse events to move or spawn the ball
-    window.addEventListener('mousedown', function (e) {
-        if (e.button === 0) {  // Left click to move the ball
-            ball.mPos.x = e.clientX;
-            ball.mPos.y = e.clientY;
-        } else if (e.button === 2) {  // Right click to spawn a new ball
-            ball = new Ball();
-        }
+    // Handle mouse events to move the ball
+    window.addEventListener('mousemove', function (e) {
+        ball.mPos.x = e.clientX;
+        ball.mPos.y = e.clientY;
     });
 
-    // Prevent the context menu from appearing on right-click
-    window.addEventListener('contextmenu', function (e) {
-        e.preventDefault();
+    // Toggle button functionality for enabling/disabling boundaries
+    document.getElementById('toggleBoundaries').addEventListener('click', function () {
+        ball.boundaryEnabled = !ball.boundaryEnabled;
+        this.textContent = ball.boundaryEnabled ? "Disable Boundaries" : "Enable Boundaries";
     });
 
     // Request Animation Frame for smooth animation
