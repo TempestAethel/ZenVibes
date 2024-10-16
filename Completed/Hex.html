@@ -10,18 +10,19 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #fff;
+      background: #B0B0B0; /* Default gray gradient */
       transition: background 0.5s ease;
     }
 
     .color-palette {
       display: grid;
-      grid-template-columns: repeat(20, 30px); /* Grid with 20 colors per row */
+      grid-template-columns: repeat(10, 30px); /* 10 columns for 100 colors */
       gap: 5px;
       padding: 10px;
       border: 2px solid #000;
       border-radius: 10px;
       cursor: pointer;
+      position: relative;
     }
 
     .color-palette div {
@@ -29,6 +30,7 @@
       height: 30px;
       border-radius: 5px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
     }
 
     .color-palette div:hover {
@@ -36,15 +38,32 @@
       box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
     }
 
+    .color-palette div::after {
+      content: attr(data-color);
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #fff;
+      padding: 2px;
+      font-size: 12px;
+      border-radius: 3px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .color-palette div:hover::after {
+      opacity: 1;
+    }
+
     .color-input {
       display: none;
     }
 
-    /* Button styling */
-    .copy-button {
+    /* Button and input styles */
+    .copy-button, .reset-button {
       position: fixed;
       bottom: 20px;
-      right: 20px;
       padding: 10px 20px;
       background-color: #007BFF;
       color: white;
@@ -55,12 +74,49 @@
       transition: background-color 0.3s ease;
     }
 
-    .copy-button:hover {
+    .reset-button {
+      bottom: 70px; /* Adjust position */
+    }
+
+    .copy-button:hover, .reset-button:hover {
       background-color: #0056b3;
     }
 
-    .copy-button:active {
+    .copy-button:active, .reset-button:active {
       background-color: #00408d;
+    }
+
+    .input-wrapper {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+    }
+
+    .input-wrapper input[type="range"] {
+      width: 200px;
+      margin-right: 10px;
+    }
+
+    .input-wrapper label, .input-wrapper input[type="checkbox"] {
+      margin-left: 5px;
+    }
+
+    /* Gradient animation */
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .animated-gradient {
+      animation: gradient 15s ease infinite;
     }
   </style>
 </head>
@@ -73,47 +129,65 @@
   <!-- Hidden color input to simulate color picker -->
   <input type="color" id="symbolColor" class="color-input">
 
+  <!-- Input for choosing gradient angle -->
+  <div class="input-wrapper">
+    <label for="gradientAngle">Gradient Angle:</label>
+    <input type="range" id="gradientAngle" min="0" max="360" value="90" step="1">
+    <span id="angleValue">90°</span>
+
+    <label for="animationToggle">Enable Animation:</label>
+    <input type="checkbox" id="animationToggle">
+  </div>
+
   <!-- Copy button -->
   <button class="copy-button" id="copyButton">Copy Gradient CSS</button>
 
+  <!-- Reset button -->
+  <button class="reset-button" id="resetButton">Reset</button>
+
   <script>
-    // Array of hex color codes to use in the palette
     const colors = [
-      '#FF5733', '#33FF57', '#3357FF', '#57FF33', '#5733FF', '#FF33A1',
-      '#33FFF5', '#F5FF33', '#A1FF33', '#5733FF', '#F533FF', '#33D1FF',
-      '#D1FF33', '#33FFB1', '#FF3380', '#80FF33', '#33FF99', '#9933FF',
-      '#FF6F61', '#6A1B9A', '#1E88E5', '#43A047', '#FBC02D', '#8E24AA',
-      '#00BCD4', '#FF9800', '#9C27B0', '#4CAF50', '#3F51B5', '#FFEB3B',
-      '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
-      '#800000', '#808000', '#008000', '#000080', '#800080', '#008080',
-      '#C0C0C0', '#A52A2A', '#DEB887', '#5F9EA0', '#7FFF00', '#D2691E'
-      // Add more colors as needed
-    ];
+      '#FF5733', '#33FF57', '#3357FF', '#57FF33', '#5733FF', '#FF33A1', '#33FFF5', '#F5FF33', '#A1FF33', '#5733FF',
+      '#F533FF', '#33D1FF', '#D1FF33', '#33FFB1', '#FF3380', '#80FF33', '#33FF99', '#9933FF', '#FF6F61', '#6A1B9A',
+      '#1E88E5', '#43A047', '#FBC02D', '#8E24AA', '#00BCD4', '#FF9800', '#9C27B0', '#4CAF50', '#3F51B5', '#FFEB3B',
+      '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#800000', '#808000', '#008000', '#000080',
+      '#800080', '#008080', '#C0C0C0', '#A52A2A', '#DEB887', '#5F9EA0', '#7FFF00', '#D2691E', '#FF4500', '#8B008B',
+      '#2E8B57', '#A52A2A', '#B22222', '#5F9EA0', '#7FFF00', '#A52A2A', '#D2691E', '#20B2AA', '#FF6347', '#2E8B57',
+      '#BC8F8F', '#C71585', '#00008B', '#006400', '#8B0000', '#808000', '#8B008B', '#FF1493', '#FF8C00', '#B22222',
+      '#8B0000', '#6A5ACD', '#32CD32', '#FF4500', '#DAA520', '#FF6347', '#FFD700', '#FF1493', '#FF4500', '#00BFFF',
+      '#8A2BE2', '#98FB98', '#FFD700', '#ADFF2F', '#8A2BE2', '#4B0082', '#4CAF50', '#FF6347', '#00FFFF', '#6B8E23',
+      '#B22222', '#4B0082', '#D2691E', '#8B0000', '#808000', '#7FFF00', '#FF00FF', '#FF8C00', '#2E8B57', '#4CAF50',
+      '#D2691E', '#5F9EA0', '#F5FF33', '#FF3380', '#B0E0E6', '#5F9EA0', '#B0C4DE', '#B0B0B0', '#FF0000', '#FF8C00'
+    ]; // 100 Colors
 
     const paletteContainer = document.querySelector('.color-palette');
-    const colorInput = document.querySelector('#symbolColor'); // Hidden color input
-    const copyButton = document.querySelector('#copyButton'); // Copy button
-    let selectedColors = []; // Array to store selected colors
+    const colorInput = document.querySelector('#symbolColor');
+    const copyButton = document.querySelector('#copyButton');
+    const resetButton = document.querySelector('#resetButton');
+    const angleSlider = document.querySelector('#gradientAngle');
+    const angleValue = document.querySelector('#angleValue');
+    const animationToggle = document.querySelector('#animationToggle');
+    let selectedColors = [];
 
     // Inject color swatches into the color palette
     colors.forEach(color => {
       const colorDiv = document.createElement('div');
       colorDiv.style.backgroundColor = color;
+      colorDiv.setAttribute('data-color', color); // Tooltip color
       paletteContainer.appendChild(colorDiv);
 
       // Add or remove color from the gradient on click
       colorDiv.addEventListener('click', () => {
-        // Check if the color is already selected
         const colorIndex = selectedColors.indexOf(color);
 
         if (colorIndex > -1) {
           // If color is already in the gradient, remove it
           selectedColors.splice(colorIndex, 1);
-          colorDiv.style.border = 'none'; // Remove border on deselection
+          colorDiv.style.border = 'none';
         } else {
           // If color is not in the gradient, add it
           selectedColors.push(color);
-          colorDiv.style.border = '2px solid #000'; // Add border on selection
+          colorDiv.style.border = '2px solid #000';
         }
 
         // Update the background gradient
@@ -124,19 +198,43 @@
     // Update background gradient
     function updateGradient() {
       if (selectedColors.length === 0) {
-        document.body.style.background = '#fff'; // If no colors selected, set to white
+        document.body.style.background = '#B0B0B0'; // Default gray background if no colors selected
+        document.body.style.animation = ''; // Remove animation if no colors selected
       } else {
-        const gradient = `linear-gradient(to right, ${selectedColors.join(', ')})`;
+        const angle = angleSlider.value;
+        const gradient = `linear-gradient(${angle}deg, ${selectedColors.join(', ')})`;
         document.body.style.background = gradient;
+
+        // Check if animation is enabled
+        if (animationToggle.checked) {
+          document.body.style.animation = 'gradient 15s ease infinite';
+        } else {
+          document.body.style.animation = '';
+        }
       }
     }
 
-    // Copy the current gradient CSS to clipboard
+    // Update angle value display
+    angleSlider.addEventListener('input', () => {
+      angleValue.textContent = `${angleSlider.value}°`;
+      updateGradient();
+    });
+
+    // Copy gradient CSS to clipboard
     copyButton.addEventListener('click', () => {
-      const gradientCSS = `background: linear-gradient(to right, ${selectedColors.join(', ')});`;
+      const gradientCSS = `background: linear-gradient(${angleSlider.value}deg, ${selectedColors.join(', ')});`;
       navigator.clipboard.writeText(gradientCSS).then(() => {
         alert('Gradient CSS copied to clipboard!');
       });
+    });
+
+    // Reset button functionality
+    resetButton.addEventListener('click', () => {
+      selectedColors = [];
+      paletteContainer.querySelectorAll('div').forEach(div => {
+        div.style.border = 'none'; // Remove any borders
+      });
+      updateGradient();
     });
 
   </script>
