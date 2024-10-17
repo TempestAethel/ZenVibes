@@ -1,236 +1,176 @@
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hex Color Palette</title>
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #B0B0B0; /* Default gray gradient */
-      transition: background 0.5s ease;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Color Slider</title>
+    <style>
+        body {
+            background: linear-gradient(-45deg, #1a1a1a, #4d4d4d, #808080, #333333);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
 
-    .color-palette {
-      display: grid;
-      grid-template-columns: repeat(15, 30px); /* 10 columns for 100 colors */
-      gap: 5px;
-      padding: 10px;
-      border: 2px solid #000;
-      border-radius: 10px;
-      cursor: pointer;
-      position: relative;
-    }
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
 
-    .color-palette div {
-      width: 30px;
-      height: 30px;
-      border-radius: 5px;
-      position: relative;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
 
-    .color-palette div:hover {
-      transform: scale(1.2);
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    }
+        #colorLabel {
+            font-size: 20px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            margin: 20px 0;
+        }
 
-    /* Tooltips */
-    .color-palette div::after {
-      content: attr(data-color);
-      position: absolute;
-      bottom: -25px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #fff;
-      padding: 2px 5px;
-      font-size: 12px;
-      border-radius: 3px;
-      opacity: 0;
-      pointer-events: none; /* Ensure it does not block other clicks */
-      transition: opacity 0.2s ease;
-      white-space: nowrap;
-    }
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(20, 1fr);
+            gap: 1px;
+            margin-top: 20px;
+            width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-    .color-palette div:hover::after {
-      opacity: 1;
-    }
+        .color-box {
+            width: 100%;
+            height: 30px;
+            cursor: pointer;
+            border: 1px solid #333;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
 
-    .color-input {
-      display: none;
-    }
+        .color-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        }
 
-    /* Button and input styles */
-    .reset-button {
-      position: fixed;
-      bottom: 20px;
-      padding: 10px 20px;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background-color 0.3s ease;
-    }
+        #hueSlider {
+            width: 100%;
+            margin: 20px 0;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, 
+                hsl(0, 100%, 50%), 
+                hsl(60, 100%, 50%), 
+                hsl(120, 100%, 50%), 
+                hsl(180, 100%, 50%), 
+                hsl(240, 100%, 50%), 
+                hsl(300, 100%, 50%), 
+                hsl(360, 100%, 50%)
+            );
+            border-radius: 5px;
+        }
 
-    .reset-button {
-      bottom: 70px; /* Adjust position */
-    }
+        input[type="range"] {
+            height: 8px;
+            margin: 10px 0;
+        }
 
-    .reset-button:hover {
-      background-color: #0056b3;
-    }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            border: 2px solid #333;
+            transition: background 0.2s;
+        }
 
-    .reset-button:active {
-      background-color: #00408d;
-    }
-
-    .input-wrapper {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: 10;
-    }
-
-    .input-wrapper input[type="range"] {
-      width: 200px;
-      margin-right: 10px;
-    }
-
-    .input-wrapper label, .input-wrapper input[type="checkbox"] {
-      margin-left: 5px;
-    }
-
-    /* Gradient animation */
-    @keyframes gradient {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
-    }
-
-    .animated-gradient {
-      animation: gradient 15s ease infinite;
-    }
-  </style>
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            border: 2px solid #333;
+            transition: background 0.2s;
+        }
+    </style>
 </head>
 <body>
-  <!-- Color Picker Grid -->
-  <div class="color-palette">
-    <!-- Colors will be dynamically added with JavaScript -->
-  </div>
 
-  <!-- Hidden color input to simulate color picker -->
-  <input type="color" id="symbolColor" class="color-input">
+    <h1>Dynamic Color Slider</h1>
+    <div id="colorLabel">Hex Value: #FFFFFF | RGB: (255, 255, 255)</div>
+    <input type="range" id="hueSlider" min="0" max="360" value="0" />
+    <div id="grid"></div>
 
-  <!-- Input for choosing gradient angle -->
-  <div class="input-wrapper">
-    <label for="gradientAngle">Gradient Angle:</label>
-    <input type="range" id="gradientAngle" min="0" max="360" value="90" step="1">
-    <span id="angleValue">90°</span>
+    <script>
+        const grid = document.getElementById('grid');
+        const hueSlider = document.getElementById('hueSlider');
+        const colorLabel = document.getElementById('colorLabel');
 
-    <label for="animationToggle">Enable Animation:</label>
-    <input type="checkbox" id="animationToggle">
-  </div>
+        function generateColors(hue) {
+            grid.innerHTML = '';
+            for (let i = 0; i < 400; i++) {
+                const saturation = Math.floor((i % 20) * 5.25);
+                const lightness = Math.floor(Math.floor(i / 20) * 5.25);
+                const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+                const hexColor = hslToHex(hue, saturation, lightness);
+                const rgbColor = hslToRgb(hue, saturation, lightness);
+                
+                const colorBox = document.createElement('div');
+                colorBox.className = 'color-box';
+                colorBox.style.backgroundColor = color;
 
-  <!-- Reset button -->
-  <button class="reset-button" id="resetButton">Reset</button>
+                colorBox.onclick = () => {
+                    navigator.clipboard.writeText(hexColor);
+                    colorLabel.textContent = `Hex Value: ${hexColor} | RGB: ${rgbColor}`; // Update label with clicked color
+                };
 
-  <script>
-const colors = [
-  '#FF0000', '#FF3300', '#FF6600', '#FF9900', '#FFCC00', '#FFFF00', '#CCFF00', '#99FF00', '#66FF00', '#33FF00', '#00FF00', '#00FF33', '#00FF66', '#00FF99', '#00FFCC',
-  '#FF3300', '#FF4D00', '#FF6600', '#FF7F00', '#FF9900', '#FFB300', '#FFCC00', '#FFE600', '#FFFF00', '#F9FF00', '#E6FF00', '#CCFF00', '#A3FF00', '#7AFF00', '#52FF00',
-  '#FF6600', '#FF7F00', '#FF9900', '#FFB300', '#FFCC00', '#FFE600', '#FFFF00', '#F9FF00', '#E6FF00', '#D4FF00', '#B8FF00', '#99FF00', '#80FF00', '#66FF00', '#4DFF00',
-  '#FF9900', '#FFB300', '#FFCC00', '#FFE600', '#FFFF00', '#FFFF33', '#F9FF33', '#E6FF33', '#D4FF33', '#B3FF33', '#99FF33', '#80FF33', '#66FF33', '#4DFF33', '#33FF33',
-  '#FFCC00', '#FFB300', '#FFCC00', '#FFE600', '#FFFF00', '#FFFF33', '#F9FF33', '#E6FF33', '#D4FF33', '#B3FF33', '#99FF33', '#80FF33', '#66FF33', '#4DFF33', '#33FF33',
-  '#FFFF00', '#FFFF33', '#F9FF33', '#E6FF33', '#D4FF33', '#B3FF33', '#99FF33', '#80FF33', '#66FF33', '#4DFF33', '#33FF33', '#2AFF33', '#20FF33', '#19FF33', '#13FF33',
-  '#CCFF00', '#A3FF00', '#7AFF00', '#52FF00', '#2AFF00', '#1AFF00', '#14FF00', '#11FF00', '#0DFF00', '#0AFF00', '#08FF00', '#06FF00', '#04FF00', '#03FF00', '#02FF00',
-  '#99FF00', '#7AFF00', '#52FF00', '#2AFF00', '#1AFF00', '#14FF00', '#11FF00', '#0DFF00', '#0AFF00', '#08FF00', '#06FF00', '#04FF00', '#03FF00', '#02FF00', '#01FF00',
-  '#66FF00', '#58FF00', '#4DFF00', '#33FF00', '#20FF00', '#19FF00', '#13FF00', '#0DFF00', '#0AFF00', '#08FF00', '#06FF00', '#04FF00', '#03FF00', '#02FF00', '#01FF00',
-  '#33FF00', '#2AFF00', '#20FF00', '#13FF00', '#11FF00', '#0DFF00', '#0AFF00', '#08FF00', '#06FF00', '#04FF00', '#03FF00', '#02FF00', '#01FF00', '#01FF33', '#01FF66',
-  '#00FF00', '#00FF33', '#00FF66', '#00FF99', '#00FFCC', '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF',
-  '#00FF33', '#00FF66', '#00FF99', '#00FFCC', '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF', '#0022FF',
-  '#00FF66', '#00FF99', '#00FFCC', '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF', '#0022FF', '#0011FF',
-  '#00FF99', '#00FFCC', '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF', '#0022FF', '#0011FF', '#0000FF',
-  '#00FFCC', '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF', '#0022FF', '#0011FF', '#0000FF', '#0000CC',
-  '#00FFFF', '#00BFFF', '#00AFFF', '#0099FF', '#0088FF', '#0077FF', '#0066FF', '#0055FF', '#0044FF', '#0033FF', '#0022FF', '#0011FF', '#0000FF', '#0000CC', '#0000B3'
-];
+                grid.appendChild(colorBox);
+            }
+        }
 
+        function hslToHex(h, s, l) {
+            s /= 100;
+            l /= 100;
+            const a = s * Math.min(l, 1 - l);
+            const f = (n) => {
+                const k = (n + h / 30) % 12;
+                return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))));
+            };
+            const r = f(0), g = f(8), b = f(4);
+            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+        }
 
-    let selectedColors = [];
-    const colorPalette = document.querySelector('.color-palette');
-    const angleSlider = document.querySelector('#gradientAngle');
-    const angleValue = document.querySelector('#angleValue');
-    const animationToggle = document.querySelector('#animationToggle');
-    const resetButton = document.querySelector('#resetButton');
+        function hslToRgb(h, s, l) {
+            s /= 100;
+            l /= 100;
+            const a = s * Math.min(l, 1 - l);
+            const f = (n) => {
+                const k = (n + h / 30) % 12;
+                return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))));
+            };
+            return `${f(0)}, ${f(8)}, ${f(4)}`;
+        }
 
-    // Generate the color palette dynamically
-    colors.forEach(color => {
-      const colorDiv = document.createElement('div');
-      colorDiv.style.backgroundColor = color;
-      colorDiv.setAttribute('data-color', color);  // Set tooltip for color
-      colorDiv.addEventListener('click', () => toggleColor(colorDiv, color));
-      colorPalette.appendChild(colorDiv);
-    });
+        hueSlider.addEventListener('input', () => {
+            generateColors(hueSlider.value);
+        });
 
-    // Toggle selected color and apply gradient
-    function toggleColor(colorDiv, color) {
-      if (colorDiv.style.border === '2px solid red') {
-        colorDiv.style.border = 'none';
-        selectedColors = selectedColors.filter(c => c !== color);
-      } else {
-        colorDiv.style.border = '2px solid red';
-        selectedColors.push(color);
-      }
-      updateGradient();
-    }
+        // Initialize the grid with the default hue
+        generateColors(0);
+    </script>
 
-    // Update gradient based on selected colors
-    function updateGradient() {
-      const angle = angleSlider.value;
-      const gradient = `linear-gradient(${angle}deg, ${selectedColors.join(', ')})`;
-      document.body.style.background = gradient;
-
-      if (animationToggle.checked) {
-        document.body.classList.add('animated-gradient');
-      } else {
-        document.body.classList.remove('animated-gradient');
-      }
-    }
-
-    // Event listeners for updating gradient angle and animation
-    angleSlider.addEventListener('input', () => {
-      angleValue.textContent = `${angleSlider.value}°`;
-      updateGradient();
-    });
-
-    animationToggle.addEventListener('change', () => {
-      updateGradient();
-    });
-
-    // Reset button functionality
-    resetButton.addEventListener('click', () => {
-      selectedColors = [];
-      document.querySelectorAll('.color-palette div').forEach(div => {
-        div.style.border = 'none';
-      });
-      angleSlider.value = 90;
-      angleValue.textContent = '90°';
-      animationToggle.checked = false;
-      updateGradient();
-    });
-
-    // Initial gradient update
-    updateGradient();
-  </script>
 </body>
 </html>
