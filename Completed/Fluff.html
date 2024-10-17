@@ -8,18 +8,12 @@
             margin: 0;
             height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             background: linear-gradient(to bottom, #87CEEB, #B0E0E6); /* Light blue to light gray */
             overflow: hidden;
             font-family: Arial, sans-serif;
-        }
-
-        .sky {
-            position: relative;
-            width: 100%;
-            height: 100%;
+            cursor: default;
         }
 
         .cloud {
@@ -38,90 +32,9 @@
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
-        /* Cloud definitions */
-        .cloud:nth-child(1) {
-            width: 200px;
-            height: 100px;
-            left: 15%;
-            top: 10%;
-            animation: float 6s ease-in-out infinite;
-        }
-        .cloud:nth-child(1):before {
-            width: 120px;
-            height: 120px;
-            left: 30px;
-            top: -20px;
-        }
-        .cloud:nth-child(1):after {
-            width: 150px;
-            height: 150px;
-            left: -50px;
-            top: 10px;
-        }
-
-        .cloud:nth-child(2) {
-            width: 220px;
-            height: 120px;
-            left: 60%;
-            top: 15%;
-            animation: float 7s ease-in-out infinite;
-        }
-        .cloud:nth-child(2):before {
-            width: 140px;
-            height: 140px;
-            left: 40px;
-            top: -30px;
-        }
-        .cloud:nth-child(2):after {
-            width: 160px;
-            height: 160px;
-            left: -60px;
-            top: 10px;
-        }
-
-        .cloud:nth-child(3) {
-            width: 180px;
-            height: 100px;
-            left: 30%;
-            top: 40%;
-            animation: float 5s ease-in-out infinite;
-        }
-        .cloud:nth-child(3):before {
-            width: 100px;
-            height: 100px;
-            left: 20px;
-            top: -10px;
-        }
-        .cloud:nth-child(3):after {
-            width: 120px;
-            height: 120px;
-            left: -40px;
-            top: 5px;
-        }
-
-        .cloud:nth-child(4) {
-            width: 250px;
-            height: 140px;
-            left: 70%;
-            top: 50%;
-            animation: float 8s ease-in-out infinite;
-        }
-        .cloud:nth-child(4):before {
-            width: 160px;
-            height: 160px;
-            left: 50px;
-            top: -40px;
-        }
-        .cloud:nth-child(4):after {
-            width: 180px;
-            height: 180px;
-            left: -80px;
-            top: 10px;
-        }
-
         @keyframes float {
             0% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-10px); }
             100% { transform: translateY(0); }
         }
 
@@ -154,17 +67,67 @@
     </style>
 </head>
 <body>
-    <div class="sky">
-        <div class="cloud"></div>
-        <div class="cloud"></div>
-        <div class="cloud"></div>
-        <div class="cloud"></div>
-    </div>
+    <div class="sky"></div>
     <button class="download-btn" onclick="download()">
         <span class="download-icon">☁️</span> <!-- Cloud symbol -->
     </button>
 
     <script>
+        // Function to create a new cloud
+        function createCloud(x, y) {
+            const cloud = document.createElement('div');
+            cloud.className = 'cloud';
+            const size = Math.random() * 80 + 50; // Random size between 50 and 130
+            cloud.style.width = `${size}px`;
+            cloud.style.height = `${size / 1.5}px`;
+            cloud.style.left = `${x}px`;
+            cloud.style.top = `${y}px`;
+
+            // Create additional layers for fluffy appearance
+            const layerCount = Math.floor(Math.random() * 3) + 2; // 2 to 4 layers
+            for (let i = 0; i < layerCount; i++) {
+                const layer = document.createElement('div');
+                layer.className = 'cloud';
+                layer.style.width = `${size * (Math.random() * 0.5 + 0.5)}px`;
+                layer.style.height = `${(size / 1.5) * (Math.random() * 0.5 + 0.5)}px`;
+                layer.style.left = `${Math.random() * 40 - 20}px`;
+                layer.style.top = `${Math.random() * 40 - 20}px`;
+                layer.style.opacity = 0.8;
+                cloud.appendChild(layer);
+            }
+
+            cloud.style.animation = `float ${Math.random() * 3 + 4}s ease-in-out infinite`;
+            document.querySelector('.sky').appendChild(cloud);
+
+            // Add event listeners for interaction
+            cloud.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                cloud.remove();
+            });
+
+            cloud.addEventListener('mousedown', (e) => {
+                if (e.button === 1) { // Middle mouse button
+                    cloud.style.position = 'absolute';
+                    cloud.style.transition = 'none'; // Disable transitions during drag
+                    const moveCloud = (event) => {
+                        cloud.style.left = `${event.pageX - size / 2}px`;
+                        cloud.style.top = `${event.pageY - size / 3}px`;
+                    };
+                    document.addEventListener('mousemove', moveCloud);
+                    document.addEventListener('mouseup', () => {
+                        document.removeEventListener('mousemove', moveCloud);
+                        cloud.style.transition = ''; // Re-enable transitions
+                    }, { once: true });
+                }
+            });
+        }
+
+        // Create cloud on left click
+        document.addEventListener('click', (e) => {
+            createCloud(e.pageX, e.pageY);
+        });
+
+        // Download function
         function download() {
             const element = document.createElement('a');
             const file = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
