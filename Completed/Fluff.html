@@ -14,6 +14,7 @@
             overflow: hidden;
             font-family: Arial, sans-serif;
             cursor: default;
+            position: relative;
         }
 
         .cloud {
@@ -56,6 +57,11 @@
             font-size: 24px;
             line-height: 0; /* Centering the icon */
         }
+
+        /* Hidden canvas element */
+        canvas {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -63,6 +69,7 @@
     <button class="download-btn" onclick="download()">
         <span class="download-icon">☁️</span> <!-- Cloud symbol -->
     </button>
+    <canvas id="canvas"></canvas>
 
     <script>
         // Function to create a fluffy cloud
@@ -71,7 +78,7 @@
             cloud.className = 'cloud';
             const baseSize = Math.random() * 60 + 50; // Base size for cloud
             cloud.style.width = `${baseSize}px`;
-            cloud.style.height = `${baseSize}px`; // Make it more spherical
+            cloud.style.height = `${baseSize}px`;
             cloud.style.left = `${x}px`;
             cloud.style.top = `${y}px`;
             cloud.style.animation = `float ${Math.random() * 4 + 3}s ease-in-out infinite`;
@@ -80,12 +87,12 @@
             for (let i = 0; i < 6; i++) {
                 const layer = document.createElement('div');
                 layer.className = 'cloud';
-                const size = baseSize * (0.5 + Math.random() * 0.5); // Random size for layers
+                const size = baseSize * (0.5 + Math.random() * 0.5);
                 layer.style.width = `${size}px`;
-                layer.style.height = `${size}px`; // Make it more spherical
-                layer.style.left = `${Math.random() * 40 - 20}px`; // Random horizontal offset
-                layer.style.top = `${Math.random() * 30 - 15}px`; // Random vertical offset
-                layer.style.opacity = 0.7; // Adjust opacity for fluffiness
+                layer.style.height = `${size}px`;
+                layer.style.left = `${Math.random() * 40 - 20}px`;
+                layer.style.top = `${Math.random() * 30 - 15}px`;
+                layer.style.opacity = 0.7;
                 cloud.appendChild(layer);
             }
 
@@ -98,9 +105,9 @@
             });
 
             cloud.addEventListener('mousedown', (e) => {
-                if (e.button === 1) { // Middle mouse button
+                if (e.button === 1) {
                     cloud.style.position = 'absolute';
-                    cloud.style.transition = 'none'; // Disable transitions during drag
+                    cloud.style.transition = 'none';
                     const moveCloud = (event) => {
                         cloud.style.left = `${event.pageX - baseSize / 2}px`;
                         cloud.style.top = `${event.pageY - baseSize / 2}px`;
@@ -108,7 +115,7 @@
                     document.addEventListener('mousemove', moveCloud);
                     document.addEventListener('mouseup', () => {
                         document.removeEventListener('mousemove', moveCloud);
-                        cloud.style.transition = ''; // Re-enable transitions
+                        cloud.style.transition = '';
                     }, { once: true });
                 }
             });
@@ -116,18 +123,48 @@
 
         // Create cloud on left click
         document.addEventListener('click', (e) => {
-            createCloud(e.pageX - 30, e.pageY - 30); // Center cloud on click
+            createCloud(e.pageX - 30, e.pageY - 30);
         });
 
-        // Download function
+        // Function to download the image
         function download() {
-            const element = document.createElement('a');
-            const file = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
-            element.href = URL.createObjectURL(file);
-            element.download = 'cloudy_sky.html';
-            document.body.appendChild(element); // Append to the document
-            element.click(); // Simulate click
-            document.body.removeChild(element); // Remove from document
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            const sky = document.querySelector('.sky');
+            const skyWidth = window.innerWidth;
+            const skyHeight = window.innerHeight;
+            canvas.width = skyWidth;
+            canvas.height = skyHeight;
+
+            // Draw the background gradient
+            const gradient = context.createLinearGradient(0, 0, 0, skyHeight);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(0.5, '#A1C8E6');
+            gradient.addColorStop(1, '#D0E4F2');
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, skyWidth, skyHeight);
+
+            // Draw the clouds
+            const clouds = document.querySelectorAll('.cloud');
+            clouds.forEach(cloud => {
+                const rect = cloud.getBoundingClientRect();
+                context.save();
+                context.translate(rect.left, rect.top);
+                context.globalAlpha = parseFloat(getComputedStyle(cloud).opacity);
+                context.beginPath();
+                context.arc(rect.width / 2, rect.height / 2, rect.width / 2, 0, Math.PI * 2);
+                context.fillStyle = 'white';
+                context.fill();
+                context.restore();
+            });
+
+            // Create and trigger download
+            canvas.toBlob((blob) => {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'cloudy_sky.png';
+                link.click();
+            }, 'image/png');
         }
     </script>
 </body>
