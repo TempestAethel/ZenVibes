@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloudy Sky</title>
+    <title>Fluffy Cloudy Sky</title>
     <style>
         body {
             margin: 0;
@@ -10,7 +10,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(to bottom, #87CEEB, #B0E0E6); /* Light blue to light gray */
+            background: linear-gradient(to bottom, #87CEEB, #A1C8E6, #D0E4F2); /* Gradient for a more realistic sky */
             overflow: hidden;
             font-family: Arial, sans-serif;
             cursor: default;
@@ -19,17 +19,9 @@
         .cloud {
             position: absolute;
             background: white;
-            border-radius: 50%;
             opacity: 0.9;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-        }
-
-        .cloud:before, .cloud:after {
-            content: '';
-            position: absolute;
-            background: white;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             border-radius: 50%;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
         @keyframes float {
@@ -73,30 +65,30 @@
     </button>
 
     <script>
-        // Function to create a new cloud
+        // Function to create a fluffy cloud
         function createCloud(x, y) {
             const cloud = document.createElement('div');
             cloud.className = 'cloud';
-            const size = Math.random() * 80 + 50; // Random size between 50 and 130
-            cloud.style.width = `${size}px`;
-            cloud.style.height = `${size / 1.5}px`;
+            const baseSize = Math.random() * 60 + 50; // Base size for cloud
+            cloud.style.width = `${baseSize}px`;
+            cloud.style.height = `${baseSize}px`; // Make it more spherical
             cloud.style.left = `${x}px`;
             cloud.style.top = `${y}px`;
+            cloud.style.animation = `float ${Math.random() * 4 + 3}s ease-in-out infinite`;
 
-            // Create additional layers for fluffy appearance
-            const layerCount = Math.floor(Math.random() * 3) + 2; // 2 to 4 layers
-            for (let i = 0; i < layerCount; i++) {
+            // Create layers for fluffy appearance
+            for (let i = 0; i < 6; i++) {
                 const layer = document.createElement('div');
                 layer.className = 'cloud';
-                layer.style.width = `${size * (Math.random() * 0.5 + 0.5)}px`;
-                layer.style.height = `${(size / 1.5) * (Math.random() * 0.5 + 0.5)}px`;
-                layer.style.left = `${Math.random() * 40 - 20}px`;
-                layer.style.top = `${Math.random() * 40 - 20}px`;
-                layer.style.opacity = 0.8;
+                const size = baseSize * (0.5 + Math.random() * 0.5); // Random size for layers
+                layer.style.width = `${size}px`;
+                layer.style.height = `${size}px`; // Make it more spherical
+                layer.style.left = `${Math.random() * 40 - 20}px`; // Random horizontal offset
+                layer.style.top = `${Math.random() * 30 - 15}px`; // Random vertical offset
+                layer.style.opacity = 0.7; // Adjust opacity for fluffiness
                 cloud.appendChild(layer);
             }
 
-            cloud.style.animation = `float ${Math.random() * 3 + 4}s ease-in-out infinite`;
             document.querySelector('.sky').appendChild(cloud);
 
             // Add event listeners for interaction
@@ -110,8 +102,8 @@
                     cloud.style.position = 'absolute';
                     cloud.style.transition = 'none'; // Disable transitions during drag
                     const moveCloud = (event) => {
-                        cloud.style.left = `${event.pageX - size / 2}px`;
-                        cloud.style.top = `${event.pageY - size / 3}px`;
+                        cloud.style.left = `${event.pageX - baseSize / 2}px`;
+                        cloud.style.top = `${event.pageY - baseSize / 2}px`;
                     };
                     document.addEventListener('mousemove', moveCloud);
                     document.addEventListener('mouseup', () => {
@@ -124,7 +116,7 @@
 
         // Create cloud on left click
         document.addEventListener('click', (e) => {
-            createCloud(e.pageX, e.pageY);
+            createCloud(e.pageX - 30, e.pageY - 30); // Center cloud on click
         });
 
         // Download function
