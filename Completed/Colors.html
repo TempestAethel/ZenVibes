@@ -1,0 +1,99 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Combinations</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+        .combo {
+            display: flex;
+            margin: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(0, 255, 255, 0.7);
+            transition: transform 0.3s;
+        }
+        .combo:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.5), 0 0 60px rgba(0, 255, 255, 1);
+        }
+        .color-box {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .color-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        const colorPairs = [
+            [{ name: "Dark Slate", hex: "#455453" }, { name: "Neon Blue", hex: "#00FFFF" }],
+            [{ name: "Electric Lime", hex: "#CCFF00" }, { name: "Hot Pink", hex: "#FF69B4" }],
+            [{ name: "Crimson", hex: "#DC143C" }, { name: "Gold", hex: "#FFD700" }],
+            [{ name: "Lime Green", hex: "#32CD32" }, { name: "Medium Violet Red", hex: "#C71585" }],
+            [{ name: "Light Coral", hex: "#F08080" }, { name: "Deep Sky Blue", hex: "#00BFFF" }],
+            [{ name: "Tomato", hex: "#FF6347" }, { name: "Medium Orchid", hex: "#BA55D3" }],
+            [{ name: "Sea Green", hex: "#2E8B57" }, { name: "Coral", hex: "#FF7F50" }],
+            [{ name: "Slate Blue", hex: "#6A5ACD" }, { name: "Sandy Brown", hex: "#F4A460" }],
+            [{ name: "Orchid", hex: "#DA70D6" }, { name: "Pale Turquoise", hex: "#AFEEEE" }],
+            [{ name: "Light Sea Green", hex: "#20B2AA" }, { name: "Royal Blue", hex: "#4169E1" }],
+            [{ name: "Indigo", hex: "#4B0082" }, { name: "Navajo White", hex: "#FFDEAD" }],
+            [{ name: "Medium Sea Green", hex: "#3CB371" }, { name: "Lavender", hex: "#E6E6FA" }],
+            [{ name: "Medium Slate Blue", hex: "#7B68EE" }, { name: "Dark Orange", hex: "#FF8C00" }],
+            [{ name: "Light Pink", hex: "#FFB6C1" }, { name: "Peach Puff", hex: "#FFDAB9" }],
+            [{ name: "Turquoise", hex: "#40E0D0" }, { name: "Fuchsia", hex: "#FF00FF" }],
+            [{ name: "Spring Green", hex: "#00FF7F" }, { name: "Misty Rose", hex: "#FFE4E1" }],
+            [{ name: "Light Salmon", hex: "#FFA07A" }, { name: "Cornflower Blue", hex: "#6495ED" }],
+            [{ name: "Chocolate", hex: "#D2691E" }, { name: "Slate Gray", hex: "#708090" }],
+            [{ name: "Cyan", hex: "#00FFFF" }, { name: "Lemon Chiffon", hex: "#FFFACD" }],
+            [{ name: "Dark Violet", hex: "#9400D3" }, { name: "Mint Cream", hex: "#F5FFFA" }],
+            [{ name: "Gainsboro", hex: "#DCDCDC" }, { name: "Old Lace", hex: "#FDF5E6" }],
+            [{ name: "Cadet Blue", hex: "#5F9EA0" }, { name: "Thistle", hex: "#D8BFD8" }],
+            [{ name: "Sky Blue", hex: "#87CEEB" }, { name: "Papaya Whip", hex: "#FFEFD5" }],
+            [{ name: "Lavender Blush", hex: "#FFF0F5" }, { name: "Wheat", hex: "#F5DEB3" }],
+            [{ name: "Firebrick", hex: "#B22222" }, { name: "Pale Goldenrod", hex: "#EEE8AA" }],
+            [{ name: "Medium Purple", hex: "#9370DB" }, { name: "Light Goldenrod Yellow", hex: "#FAFAD2" }],
+            [{ name: "Honeydew", hex: "#F0FFF0" }, { name: "Medium Spring Green", hex: "#00FA9A" }],
+            [{ name: "Coral", hex: "#FF7F50" }, { name: "Antique White", hex: "#FAEBD7" }],
+            [{ name: "Blanched Almond", hex: "#FFEBCD" }, { name: "Dark Goldenrod", hex: "#B8860B" }],
+            [{ name: "Dark Olive Green", hex: "#556B2F" }, { name: "Lavender", hex: "#E6E6FA" }],
+            [{ name: "Slate Gray", hex: "#708090" }, { name: "Red", hex: "#FF0000" }],
+            [{ name: "Steel Blue", hex: "#4682B4" }, { name: "Medium Turquoise", hex: "#48D1CC" }]
+        ];
+
+        colorPairs.forEach(pair => {
+            document.body.innerHTML += `
+                <div class="combo">
+                    <div class="color-box" style="background-color: ${pair[0].hex};">
+                        <div class="color-info">${pair[0].name}<br>${pair[0].hex}</div>
+                    </div>
+                    <div class="color-box" style="background-color: ${pair[1].hex};">
+                        <div class="color-info">${pair[1].name}<br>${pair[1].hex}</div>
+                    </div>
+                </div>
+            `;
+        });
+    </script>
+
+</body>
+</html>
