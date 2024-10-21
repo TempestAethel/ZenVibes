@@ -1,9 +1,9 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Neuromorphic Keyboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;500&display=swap');
 
@@ -24,7 +24,7 @@
     body {
       background: linear-gradient(45deg, #0a3d62, #38ada9);
       background-size: 300% 300%;
-      animation: gradient 30s ease infinite;
+      animation: gradient 10s ease infinite;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -64,8 +64,6 @@
     }
 
     #TA #keyboard .key {
-      grid-row: span 1;
-      grid-column: span 1;
       transition: background-color 0.2s ease-out, border 0.2s ease-out;
       background: rgba(10, 61, 98, 0.3);
       color: #ffffff;
@@ -230,6 +228,11 @@
   const keys = document.querySelectorAll('.key');
   
   document.addEventListener('keydown', function(event) {
+    // Prevent default action for Tab, Alt, and Arrow keys
+    if (event.code === 'Tab' || event.code.startsWith('Arrow') || event.code.startsWith('Alt')) {
+      event.preventDefault();
+    }
+    
     const keyElement = document.querySelector(`button[data-key="${event.code}"]`);
     if (keyElement) {
       keyElement.classList.add('active');
